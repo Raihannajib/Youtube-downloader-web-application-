@@ -1,4 +1,4 @@
 node_modules/
 venv/
-.idea
-__pycache__
+.idea/
+__pycache__/
