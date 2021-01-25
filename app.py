@@ -1,6 +1,8 @@
-from flask import Flask, render_template, jsonify, request
+from flask import Flask, render_template, request ,send_file
 import pafy
 from pathlib import Path
+import pytube
+import time
 
 app = Flask(__name__)
 destination = str(Path.home() / "Downloads")
@@ -46,7 +48,7 @@ def playlist_a():
     all_videos = test['items']
     for item in all_videos:
         link = str(item['pafy'].watchv_url)
-        if pafy.new(link).getbestaudio().download(filepath=destination):
+        if pafy.new(link).getbestaudio(preftype="mp3"):
             continue
     return ""
 
@@ -56,9 +58,11 @@ def video():
     url = request.json['url']
     source = pafy.new(str(url)).title + ".mp4"
     stream = pafy.new(str(url))
-    if stream.streams[ len(stream.streams)-1].download(filepath=destination):
+    # if stream.streams[ len(stream.streams)-1].download(filepath=destination):
+    if pytube.YouTube(url).streams.first().download() :
+        time.sleep(5)
         return ""
-    return " "
+    return send_file(source)
 
 
 @app.route('/audio', methods=['POST'])
